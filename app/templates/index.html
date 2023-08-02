@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batman Communications</title>
+</head>
+
+<body>
+    <h1>Listening..</h1>
+    <h1 id="message-container">{{initData}}</h1>
+    <button id="myButton">zimbabre</button>
+    <video id="videoElement" width="640" height="480" autoplay></video>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"
+        integrity="sha512-Z6C1p1NIexPj5MsVUunW4pg7uMX6/TT3CUVldmjXx2kpip1eZcrAnxIusDxyFIikyM9A61zOVNgvLr/TGudOQg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+        integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <script>
+
+        $(document).ready(function () {
+            var isSpacebarPressed = false;
+            let videoElement = document.getElementById('videoElement');
+            let canvas = document.createElement('canvas');
+            let canvasContext = canvas.getContext('2d');
+            let fpsInterval = 1000 / 24; // 24 frames per second
+            let startTime = Date.now();
+
+            function getUserMedia() {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(handleSuccess)
+                    .catch(handleError);
+            }
+
+            function handleSuccess(stream) {
+                videoElement.srcObject = stream;
+                captureFrames();
+            }
+
+            function handleError(error) {
+                console.error('Error accessing the camera: ', error);
+            }
+
+            function captureFrames() {
+                // Get the current time
+                let currentTime = Date.now();
+
+                // Calculate the elapsed time since the last frame was captured
+                let elapsed = currentTime - startTime;
+
+                // If enough time has elapsed for the desired frame rate, capture the frame
+                if (elapsed >= fpsInterval) {
+                    // Reset the start time to the current time
+                    startTime = currentTime;
+
+                    // Set the canvas size to match the video element
+                    canvas.width = videoElement.videoWidth;
+                    canvas.height = videoElement.videoHeight;
+
+                    // Draw the current frame from the video element onto the canvas
+                    canvasContext.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+                    // Get the image data from the canvas and convert it to base64
+                    let imageData = canvas.toDataURL('image/jpeg', 1.0);
+
+                    // Send the base64 data to your function
+                    sendDataToFunction(imageData);
+                }
+
+                // Request the next frame
+                requestAnimationFrame(captureFrames);
+            }
+
+            function sendDataToFunction(data) {
+                // Here, you can implement your logic to send the base64 data to your function
+                // console.log('Sending data to the function:', data);
+                socket.emit('message', { 'message': data });
+            }
+
+            getUserMedia();
+            // Keydown event for the spacebar
+            $(document).on('keydown', function (event) {
+                if (event.keyCode === 32 || event.key === ' ') {
+                    if (!isSpacebarPressed) {
+                        isSpacebarPressed = true;
+                        console.log('Spacebar Keydown Event Triggered!');
+                        // Add your code for handling the spacebar keydown event here
+                        socket.emit('message', { 'message': true });
+                    }
+                }
+            });
+
+            // Keyup event for the spacebar
+            $(document).on('keyup', function (event) {
+                if (event.keyCode === 32 || event.key === ' ') {
+                    isSpacebarPressed = false;
+                    console.log('Spacebar Keyup Event Triggered!');
+                    // Add your code for handling the spacebar keyup event here
+                    socket.emit('message', { 'message': false });
+                }
+            });
+        });
+
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function () {
+            console.log('Connected to the server.');
+        });
+
+        socket.on('message', function (data) {
+            console.log('Received message: ' + data.message);
+            $('#message-container').html('<p>' + data.message + '</p>');
+        });
+        var source = new EventSource(`/listen`);
+
+        source.onmessage = function (e) {
+            // var messages = JSON.parse(e.data ? e.data.replace(/'/g, '"') : []);
+            // console.log(e);
+
+        };
+    </script>
+
+
+
+
+</body>
+
+</html>

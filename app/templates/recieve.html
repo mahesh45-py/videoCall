@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batman Communications</title>
+</head>
+
+<body>
+    <h1>Listening..</h1>
+    <h1 id="message-container">{{initData}}</h1>
+    <button id="myButton">zimbabre</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"
+        integrity="sha512-Z6C1p1NIexPj5MsVUunW4pg7uMX6/TT3CUVldmjXx2kpip1eZcrAnxIusDxyFIikyM9A61zOVNgvLr/TGudOQg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+        integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+    <script>
+
+        $(document).ready(function () {
+            var isSpacebarPressed = false;
+
+            // Keydown event for the spacebar
+            $(document).on('keydown', function (event) {
+                if (event.keyCode === 32 || event.key === ' ') {
+                    if (!isSpacebarPressed) {
+                        isSpacebarPressed = true;
+                        console.log('Spacebar Keydown Event Triggered!');
+                        // Add your code for handling the spacebar keydown event here
+                        socket.emit('message', { 'message': true });
+                    }
+                }
+            });
+
+            // Keyup event for the spacebar
+            $(document).on('keyup', function (event) {
+                if (event.keyCode === 32 || event.key === ' ') {
+                    isSpacebarPressed = false;
+                    console.log('Spacebar Keyup Event Triggered!');
+                    // Add your code for handling the spacebar keyup event here
+                    socket.emit('message', { 'message': false });
+                }
+            });
+        });
+
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function () {
+            console.log('Connected to the server.');
+        });
+
+        socket.on('message', function (data) {
+            console.log('Received message: ' + data.message);
+            // if (data.message == true) {
+            //     playBeepSound()
+            // }
+            // $('#message-container').html('<p>' + data.message + '</p>');
+            $('#message-container').html(`<img src=${data.message} />`);
+        });
+        function playBeepSound() {
+            // Create an audio element
+            var context = new AudioContext();
+            var oscillator = context.createOscillator();
+            oscillator.type = "sine";
+            oscillator.frequency.value = 800;
+            oscillator.connect(context.destination);
+            oscillator.start();
+            // Beep for 500 milliseconds
+            setTimeout(function () {
+                oscillator.stop();
+            }, 500);
+        }
+        var source = new EventSource(`/listen`);
+
+        source.onmessage = function (e) {
+            // var messages = JSON.parse(e.data ? e.data.replace(/'/g, '"') : []);
+            // console.log(e);
+
+        };
+    </script>
+
+
+
+
+</body>
+
+</html>
