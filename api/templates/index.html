@@ -11,12 +11,15 @@
     <h1>Listening..</h1>
     <h1 id="message-container">{{initData}}</h1>
     <button id="myButton">zimbabre</button>
-    <input type="text" id="quality">
+    <input type="text" id="quality" value="0.8">
+    <input type="text" id="height" value="1080">
+    <input type="text" id="width" value="1080">
     <button onclick="triggerQuality()">Trigger</button>
     <button onclick="triggerFPS(2)">2 FPS</button>
     <button onclick="triggerFPS(5)">5 FPS</button>
     <button onclick="triggerFPS(10)">10 FPS</button>
     <button onclick="triggerFPS(20)">20 FPS</button>
+
     <video id="videoElement" width="640" height="480" autoplay></video>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"
@@ -27,6 +30,8 @@
     <script>
         var clarity = 0.8
         var fps = 24
+        var width = 1080
+        var height = 1080
         function triggerFPS(val){
             fps = val;
         }
@@ -35,7 +40,7 @@
             let videoElement = document.getElementById('videoElement');
             let canvas = document.createElement('canvas');
             let canvasContext = canvas.getContext('2d');
-            let fpsInterval = 1000 / fps; // 24 frames per second
+            // let fpsInterval = 1000 / fps; // 24 frames per second
             let startTime = Date.now();
 
             function compressBase64Image(base64Data, maxWidth, maxHeight, quality) {
@@ -97,7 +102,7 @@
                 let elapsed = currentTime - startTime;
 
                 // If enough time has elapsed for the desired frame rate, capture the frame
-                if (elapsed >= fpsInterval) {
+                if (elapsed >= (1000 / fps)) {
                     // Reset the start time to the current time
                     startTime = currentTime;
 
@@ -120,11 +125,13 @@
             }
             function triggerQuality(){
                 clarity = $("#quality").val()
+                height = $("#height").val()
+                width = $("#width").val()
             }
             function sendDataToFunction(data) {
                 // Here, you can implement your logic to send the base64 data to your function
                 // console.log('Sending data to the function:', data);
-                compressBase64Image(data,1080,1080,clarity).then((data)=>{
+                compressBase64Image(data,width,height,clarity).then((data)=>{
                     socket.emit('message', { 'message': data });
                 })
                 
