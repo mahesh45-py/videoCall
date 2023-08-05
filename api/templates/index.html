@@ -11,6 +11,8 @@
     <h1>Listening..</h1>
     <h1 id="message-container">{{initData}}</h1>
     <button id="myButton">zimbabre</button>
+    <input type="text" id="quality">
+    <button onclick="triggerQuality()">Trigger</button>
     <video id="videoElement" width="640" height="480" autoplay></video>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"
@@ -19,7 +21,7 @@
     <script src="https://code.jquery.com/jquery-3.7.0.js"
         integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
     <script>
-
+        var clarity = 0.8
         $(document).ready(function () {
             var isSpacebarPressed = false;
             let videoElement = document.getElementById('videoElement');
@@ -108,11 +110,13 @@
                 // Request the next frame
                 requestAnimationFrame(captureFrames);
             }
-
+            function triggerQuality(){
+                clarity = $("#quality").val()
+            }
             function sendDataToFunction(data) {
                 // Here, you can implement your logic to send the base64 data to your function
                 // console.log('Sending data to the function:', data);
-                compressBase64Image(data,1080,1080,0.8).then((data)=>{
+                compressBase64Image(data,1080,1080,clarity).then((data)=>{
                     socket.emit('message', { 'message': data });
                 })
                 
