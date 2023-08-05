@@ -25,7 +25,7 @@
             let videoElement = document.getElementById('videoElement');
             let canvas = document.createElement('canvas');
             let canvasContext = canvas.getContext('2d');
-            let fpsInterval = 1000 / 5; // 24 frames per second
+            let fpsInterval = 1000 / 24; // 24 frames per second
             let startTime = Date.now();
 
             function compressBase64Image(base64Data, maxWidth, maxHeight, quality) {
@@ -112,7 +112,7 @@
             function sendDataToFunction(data) {
                 // Here, you can implement your logic to send the base64 data to your function
                 // console.log('Sending data to the function:', data);
-                compressBase64Image(data,40,40,0.2).then((data)=>{
+                compressBase64Image(data,1080,1080,0.8).then((data)=>{
                     socket.emit('message', { 'message': data });
                 })
                 
