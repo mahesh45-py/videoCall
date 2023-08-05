@@ -32,8 +32,13 @@
         var fps = 24
         var width = 1080
         var height = 1080
-        function triggerFPS(val){
+        function triggerFPS(val) {
             fps = val;
+        }
+        function triggerQuality() {
+            clarity = $("#quality").val()
+            height = $("#height").val()
+            width = $("#width").val()
         }
         $(document).ready(function () {
             var isSpacebarPressed = false;
@@ -123,18 +128,14 @@
                 // Request the next frame
                 requestAnimationFrame(captureFrames);
             }
-            function triggerQuality(){
-                clarity = $("#quality").val()
-                height = $("#height").val()
-                width = $("#width").val()
-            }
+
             function sendDataToFunction(data) {
                 // Here, you can implement your logic to send the base64 data to your function
                 // console.log('Sending data to the function:', data);
-                compressBase64Image(data,width,height,clarity).then((data)=>{
+                compressBase64Image(data, width, height, clarity).then((data) => {
                     socket.emit('message', { 'message': data });
                 })
-                
+
             }
 
             getUserMedia();
