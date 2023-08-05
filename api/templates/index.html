@@ -13,6 +13,10 @@
     <button id="myButton">zimbabre</button>
     <input type="text" id="quality">
     <button onclick="triggerQuality()">Trigger</button>
+    <button onclick="triggerFPS(2)">2 FPS</button>
+    <button onclick="triggerFPS(5)">5 FPS</button>
+    <button onclick="triggerFPS(10)">10 FPS</button>
+    <button onclick="triggerFPS(20)">20 FPS</button>
     <video id="videoElement" width="640" height="480" autoplay></video>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.1/socket.io.js"
@@ -22,12 +26,16 @@
         integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
     <script>
         var clarity = 0.8
+        var fps = 24
+        function triggerFPS(val){
+            fps = val;
+        }
         $(document).ready(function () {
             var isSpacebarPressed = false;
             let videoElement = document.getElementById('videoElement');
             let canvas = document.createElement('canvas');
             let canvasContext = canvas.getContext('2d');
-            let fpsInterval = 1000 / 24; // 24 frames per second
+            let fpsInterval = 1000 / fps; // 24 frames per second
             let startTime = Date.now();
 
             function compressBase64Image(base64Data, maxWidth, maxHeight, quality) {
