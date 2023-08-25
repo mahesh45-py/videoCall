@@ -1,7 +1,7 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request, jsonify
 import time
 from flask_socketio import SocketIO, emit
-
+import requests
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 socketio = SocketIO(app)
@@ -34,5 +34,20 @@ def listen():
                 yield f'data: {isTouched}\n\n'
                 time.sleep(0.1) 
     return Response(event_stream(), mimetype='text/event-stream')
+
+@app.route('/api/news')
+def getNews():
+    if request.method == 'GET':
+        url = 'https://www.ntnews.com/wp-json/ntnews/v1/latest-news-api'
+        response = requests.get(url)
+        if response.status_code == 200:
+            # Parse and work with the response data (in JSON format)
+            data = response.json()
+            return jsonify(data)
+        else:
+            return jsonify({
+                'message':'An unexpected error occured',
+                'code':response.status_code
+            })
 
     
