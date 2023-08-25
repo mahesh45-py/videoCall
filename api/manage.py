@@ -2,9 +2,12 @@ from flask import Flask, render_template, Response, request, jsonify
 import time
 from flask_socketio import SocketIO, emit
 import requests
+from flask_cors import CORS
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 socketio = SocketIO(app)
+CORS(app)
 
 isTouched = False
 
