@@ -56,5 +56,23 @@ def getNews():
                 'message':'An unexpected error occured',
                 'code':response.status_code
             })
+@app.route('/api/andhranews')
+def getNews():
+    if request.method == 'GET':
+        page = request.args.get('page')
+        if not page:
+            page = '1'
+        url = 'https://www.ntnews.com/wp-json/ntnews/v1/category-api?cat_name=andhrapradesh-news'+page
+
+        response = requests.get(url)
+        if response.status_code == 200:
+            # Parse and work with the response data (in JSON format)
+            data = response.json()
+            return jsonify(data)
+        else:
+            return jsonify({
+                'message':'An unexpected error occured',
+                'code':response.status_code
+            })
 
     
