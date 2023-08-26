@@ -62,7 +62,7 @@ def getAndhraNews():
         page = request.args.get('page')
         if not page:
             page = '1'
-        url = 'https://www.ntnews.com/wp-json/ntnews/v1/category-api?cat_name=andhrapradesh-news'+page
+        url = 'https://www.ntnews.com/wp-json/ntnews/v1/category-api?cat_name=andhrapradesh-news'
 
         response = requests.get(url)
         if response.status_code == 200:
