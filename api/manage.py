@@ -56,8 +56,8 @@ def getNews():
                 'message':'An unexpected error occured',
                 'code':response.status_code
             })
-@app.route('/andhranews')
-def getNews():
+@app.route('/api/andhranews')
+def getAndhraNews():
     if request.method == 'GET':
         page = request.args.get('page')
         if not page:
