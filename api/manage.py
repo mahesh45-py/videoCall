@@ -56,13 +56,13 @@ def getNews():
                 'message':'An unexpected error occured',
                 'code':response.status_code
             })
-@app.route('/api/andhranews')
+@app.route('/api/category')
 def getAndhraNews():
     if request.method == 'GET':
-        page = request.args.get('page')
+        page = request.args.get('catname')
         if not page:
-            page = '1'
-        url = 'https://www.ntnews.com/wp-json/ntnews/v1/category-api?cat_name=andhrapradesh-news'
+            page = 'andhrapradesh-news'
+        url = 'https://www.ntnews.com/wp-json/ntnews/v1/category-api?cat_name='+page
 
         response = requests.get(url)
         if response.status_code == 200:
