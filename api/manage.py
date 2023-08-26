@@ -41,7 +41,11 @@ def listen():
 @app.route('/api/news')
 def getNews():
     if request.method == 'GET':
-        url = 'https://www.ntnews.com/wp-json/ntnews/v1/latest-news-api'
+        page = request.args.get('page')
+        if not page:
+            page = '1'
+        url = 'https://www.ntnews.com/wp-json/ntnews/v1/latest-news-api?page='+page
+
         response = requests.get(url)
         if response.status_code == 200:
             # Parse and work with the response data (in JSON format)
