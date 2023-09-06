@@ -74,5 +74,23 @@ def getAndhraNews():
                 'message':'An unexpected error occured',
                 'code':response.status_code
             })
+@app.route('/api/odisha')
+def getOdishaNews():
+    if request.method == 'GET':
+        page = request.args.get('per_page')
+        if not page:
+            page = '20'
+        url = 'https://odishabytes.com/wp-json/wp/v2/posts?per_page='+page
+
+        response = requests.get(url)
+        if response.status_code == 200:
+            # Parse and work with the response data (in JSON format)
+            data = response.json()
+            return jsonify(data)
+        else:
+            return jsonify({
+                'message':'An unexpected error occured',
+                'code':response.status_code
+            })
 
     
