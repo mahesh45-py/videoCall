@@ -92,5 +92,23 @@ def getOdishaNews():
                 'message':'An unexpected error occured',
                 'code':response.status_code
             })
-
+            
+@app.route('/api/proxy',methods=['GET','POST'])
+def proxy():
+    if request.method == 'GET':
+        return '<h1>Working...</h1>'
+    elif request.method == 'POST':
+        payload = request.get_json()
+        url = payload.get('url')
+        response = requests.get(url)
+        if response.status_code == 200:
+            # Parse and work with the response data (in JSON format)
+            data = response.json()
+            return jsonify(data)
+        else:
+            return jsonify({
+                'message':'An unexpected error occured',
+                'code':response.status_code
+            })
+        
     
