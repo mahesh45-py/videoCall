@@ -3,7 +3,7 @@ import time
 from flask_socketio import SocketIO, emit
 import requests
 from flask_cors import CORS
-
+import base64
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 socketio = SocketIO(app)
@@ -111,4 +111,38 @@ def proxy():
                 'code':response.status_code
             })
         
+@app.route('/api/getFile',methods=['GET','POST'])
+def getFile():
+    if request.method == 'GET':
+        return '<h1>Working...</h1>'
+    elif request.method == 'POST':
+        try:
+            # Get the payload from the request
+            payload = request.get_json()
+            url = payload.get('url')
+            
+            # Fetch the file from the URL
+            response = requests.get(url)
+            
+            if response.status_code == 200:
+                # Convert the file content to Base64
+                file_content = response.content
+                base64_encoded = base64.b64encode(file_content).decode('utf-8')
+                
+                # Return the Base64 string in the JSON response
+                return jsonify({
+                    "base64": base64_encoded
+                })
+            else:
+                # Return an error if the file couldn't be fetched
+                return jsonify({
+                    'message': 'Failed to fetch the file.',
+                    'code': response.status_code
+                }), response.status_code
+
+        except Exception as e:
+            # Handle any unexpected errors
+            return jsonify({
+                'message': f'An unexpected error occurred: {str(e)}'
+            }), 500
     
