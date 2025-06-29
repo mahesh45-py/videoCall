@@ -111,6 +111,35 @@ def proxy():
                 'code':response.status_code
             })
         
+@app.route('/api/sheets', methods=['GET', 'POST'])
+def sheets_proxy():
+    try:
+        # Get the target URL from the client (query param for GET, JSON/form for POST)
+        if request.method == 'GET':
+            target_url = request.args.get('sheetUrl')
+            params = {k: v for k, v in request.args.items() if k != 'sheetUrl'}
+            if not target_url:
+                return jsonify({'error': 'sheetUrl query parameter is required'}), 400
+            resp = requests.get(target_url, params=params)
+            return (resp.text, resp.status_code, {'Content-Type': resp.headers.get('Content-Type', 'application/json')})
+        elif request.method == 'POST':
+            if request.is_json:
+                data = request.get_json()
+                target_url = data.get('sheetUrl')
+                payload = {k: v for k, v in data.items() if k != 'sheetUrl'}
+                if not target_url:
+                    return jsonify({'error': 'sheetUrl is required in JSON body'}), 400
+                resp = requests.post(target_url, json=payload)
+            else:
+                target_url = request.form.get('sheetUrl')
+                payload = {k: v for k, v in request.form.items() if k != 'sheetUrl'}
+                if not target_url:
+                    return jsonify({'error': 'sheetUrl is required in form data'}), 400
+                resp = requests.post(target_url, data=payload)
+            return (resp.text, resp.status_code, {'Content-Type': resp.headers.get('Content-Type', 'application/json')})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+        
 @app.route('/api/getFile',methods=['GET','POST'])
 def getFile():
     if request.method == 'GET':
